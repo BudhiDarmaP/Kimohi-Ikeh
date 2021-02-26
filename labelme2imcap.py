@@ -34,7 +34,7 @@ class labelme2coco(object):
         for num, json_file in enumerate(self.labelme_json):
             with open(json_file, "r") as fp:
                 data = json.load(fp)
-                self.images.append(self.image(data, num))
+                self.images.append(self.images(data, num))
                 for shapes in data["shapes"]:
                     label = shapes["label"].split("_")
                     if label not in self.label:
