@@ -18,7 +18,7 @@ class labelme2coco(object):
         self.labelme_json = labelme_json
         self.save_json_path = save_json_path
         self.info= []
-        self.image = []
+        self.images = []
         self.licenses = []
         # self.categories = []
         self.annotations = []
