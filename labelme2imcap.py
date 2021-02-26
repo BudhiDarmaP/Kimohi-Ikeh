@@ -20,7 +20,7 @@ class labelme2coco(object):
         self.info= []
         self.images = []
         self.licenses = []
-        # self.categories = []
+        self.categories = []
         self.annotations = []
         self.label = []
         self.annID = 1
@@ -45,10 +45,10 @@ class labelme2coco(object):
 
         # Sort all text labels so they are in the same order across data splits.
         self.label.sort()
-        # for label in self.label:
-            # self.categories.append(self.category(label))
-        # for annotation in self.annotations:
-        #     annotation["caption"] = self.getcatid(annotation["caption"])
+        for label in self.label:
+            self.categories.append(self.category(label))
+        for annotation in self.annotations:
+            annotation["caption"] = self.getcatid(annotation["caption"])
 
     def info(self):
         info = {}
@@ -139,13 +139,13 @@ class labelme2coco(object):
         category["name"] = label[0]
         return category
 
-    # def getcatid(self, label):
-    #     for annotations in self.annotations:
-    #         if label == annotations["image_id"]:
-    #             return annotations["id"]
-    #     print("label: {} not in categories: {}.".format(label, self.annotations))
-    #     exit()
-    #     return -1
+    def getcatid(self, label):
+        for category in self.categories:
+            if label == category["name"]:
+                return category["id"]
+        print("label: {} not in categories: {}.".format(label, self.categories))
+        exit()
+        return -1
 
     def getbbox(self, points):
         polygons = points
@@ -185,7 +185,7 @@ class labelme2coco(object):
         data_coco["images"] = self.image
         data_coco["licenses"] = self.licenses
         data_coco["annotations"] = self.annotations
-        # data_coco["categories"] = self.categories
+        data_coco["categories"] = self.categories
         return data_coco
 
     def save_json(self):
