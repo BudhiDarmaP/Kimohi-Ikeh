@@ -18,7 +18,7 @@ class labelme2coco(object):
         self.labelme_json = labelme_json
         self.save_json_path = save_json_path
         self.info= []
-        self.images = []
+        self.image = []
         self.licenses = []
         # self.categories = []
         self.annotations = []
@@ -34,7 +34,7 @@ class labelme2coco(object):
         for num, json_file in enumerate(self.labelme_json):
             with open(json_file, "r") as fp:
                 data = json.load(fp)
-                self.images.append(self.images(data, num))
+                self.images.append(self.image(data, num))
                 for shapes in data["shapes"]:
                     label = shapes["label"].split("_")
                     if label not in self.label:
@@ -60,22 +60,22 @@ class labelme2coco(object):
         info["date_created"] = self.date
         return info
     
-    def images(self, data, num):
-        images = {}
+    def image(self, data, num):
+        image = {}
         img = utils.img_b64_to_arr(data["imageData"])
         height, width = img.shape[:2]
         img = None
-        images["license"] = 1
-        images["file_name"] = data["imagePath"].split("/")[-1]
-        images["height"] = height
-        images["width"] = width
-        images["date_captured"] = "2019-12-16",
-        images["id"] = num
+        image["license"] = 1
+        image["file_name"] = data["imagePath"].split("/")[-1]
+        image["height"] = height
+        image["width"] = width
+        image["date_captured"] = "2019-12-16",
+        image["id"] = num
 
         self.height = height
         self.width = width
 
-        return images
+        return image
 
     def licenses(self):
         licenses = {}
@@ -182,7 +182,7 @@ class labelme2coco(object):
     def data2coco(self):
         data_coco = {}
         data_coco["info"] = self.info
-        data_coco["images"] = self.images
+        data_coco["images"] = self.image
         data_coco["licenses"] = self.licenses
         data_coco["annotations"] = self.annotations
         # data_coco["categories"] = self.categories
