@@ -6,6 +6,7 @@ from labelme import utils
 import numpy as np
 import glob
 import PIL.Image
+import time
 
 
 class labelme2coco(object):
@@ -16,13 +17,16 @@ class labelme2coco(object):
         """
         self.labelme_json = labelme_json
         self.save_json_path = save_json_path
+        self.info= []
         self.images = []
-        self.categories = []
+        self.licenses = []
+        # self.categories = []
         self.annotations = []
         self.label = []
         self.annID = 1
         self.height = 0
         self.width = 0
+        self.date = time.strftime('%Y/%m/$d')
 
         self.save_json()
 
@@ -46,27 +50,72 @@ class labelme2coco(object):
         for annotation in self.annotations:
             annotation["caption"] = self.getcatid(annotation["caption"])
 
-    def image(self, data, num):
-        image = {}
+    def info(self):
+        info = {}
+        info["description"] = "FMIPA UGM Dataset"
+        info["url"] = "http://fmipa.ugm.ac.id",
+        info["version"] = "1.0"
+        info["year"] = 2014,
+        info["contributor"] = "FMIPA Consortium"
+        info["date_created"] = self.date
+        return info
+    
+    def images(self, data, num):
+        images = {}
         img = utils.img_b64_to_arr(data["imageData"])
         height, width = img.shape[:2]
         img = None
-        image["height"] = height
-        image["width"] = width
-        image["id"] = num
-        image["file_name"] = data["imagePath"].split("/")[-1]
+        images["license"] = 1
+        images["file_name"] = data["imagePath"].split("/")[-1]
+        images["height"] = height
+        images["width"] = width
+        images["date_captured"] = "2019-12-16",
+        images["id"] = num
 
         self.height = height
         self.width = width
 
-        return image
+        return images
 
-    def category(self, label):
-        category = {}
-        category["supercategory"] = label[0]
-        category["id"] = len(self.categories)
-        category["name"] = label[0]
-        return category
+    def licenses(self):
+        licenses = {}
+        for num in range(9):
+            if num is 1:
+                licenses["url"] = "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution-NonCommercial-ShareAlike License"
+            elif num is 2:
+                licenses["url"] = "http://creativecommons.org/licenses/by-nc/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution-NonCommercial License"
+            elif num is 3:
+                licenses["url"] = "http://creativecommons.org/licenses/by-nc-nd/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution-NonCommercial-NoDerivs License"
+            elif num is 4:
+                licenses["url"] = "http://creativecommons.org/licenses/by/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution License"
+            elif num is 5:
+                licenses["url"] = "http://creativecommons.org/licenses/by-sa/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution-ShareAlike License"
+            elif num is 6:
+                licenses["url"] = "http://creativecommons.org/licenses/by-nd/2.0/"
+                licenses["id"] = num
+                licenses["name"] = "Attribution-NoDerivs License"
+            elif num is 7:
+                licenses["url"] = "http://flickr.com/commons/usage/"
+                licenses["id"] = num
+                licenses["name"] = "No known copyright restrictions"
+            elif num is 8:
+                licenses["url"] = "http://www.usa.gov/copyright.shtml"
+                licenses["id"] = num
+                licenses["name"] = "United States Government Work"
+            else:
+                licenses["url"] = "Unknow"
+                licenses["id"] = 0
+                licenses["name"] = "Unknow"
 
     def annotation(self, points, label, num):
         annotation = {}
@@ -74,16 +123,21 @@ class labelme2coco(object):
         x = contour[:, 0]
         y = contour[:, 1]
         area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+        annotation["image_id"] = num
+        annotation["caption"] = label[0]  # self.getcatid(label)
+        annotation["id"] = self.annID
         annotation["segmentation"] = [list(np.asarray(points).flatten())]
         annotation["iscrowd"] = 0
         annotation["area"] = area
-        annotation["image_id"] = num
-
         annotation["bbox"] = list(map(float, self.getbbox(points)))
-
-        annotation["caption"] = label[0]  # self.getcatid(label)
-        annotation["id"] = self.annID
         return annotation
+
+    def category(self, label):
+        category = {}
+        category["supercategory"] = label[0]
+        category["id"] = len(self.categories)
+        category["name"] = label[0]
+        return category
 
     def getcatid(self, label):
         for category in self.categories:
@@ -127,9 +181,11 @@ class labelme2coco(object):
 
     def data2coco(self):
         data_coco = {}
+        data_coco["info"] = self.info
         data_coco["images"] = self.images
-        data_coco["categories"] = self.categories
+        data_coco["licenses"] = self.licenses
         data_coco["annotations"] = self.annotations
+        # data_coco["categories"] = self.categories
         return data_coco
 
     def save_json(self):
@@ -142,7 +198,6 @@ class labelme2coco(object):
             os.path.dirname(os.path.abspath(self.save_json_path)), exist_ok=True
         )
         json.dump(self.data_coco, open(self.save_json_path, "w"), indent=4)
-
 
 if __name__ == "__main__":
     import argparse
