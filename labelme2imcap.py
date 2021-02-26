@@ -45,10 +45,10 @@ class labelme2coco(object):
 
         # Sort all text labels so they are in the same order across data splits.
         self.label.sort()
-        for label in self.label:
-            self.categories.append(self.category(label))
-        for annotation in self.annotations:
-            annotation["caption"] = self.getcatid(annotation["caption"])
+        # for label in self.label:
+            # self.categories.append(self.category(label))
+        # for annotation in self.annotations:
+        #     annotation["caption"] = self.getcatid(annotation["caption"])
 
     def info(self):
         info = {}
@@ -139,13 +139,13 @@ class labelme2coco(object):
         category["name"] = label[0]
         return category
 
-    def getcatid(self, label):
-        for category in self.categories:
-            if label == category["name"]:
-                return category["id"]
-        print("label: {} not in categories: {}.".format(label, self.categories))
-        exit()
-        return -1
+    # def getcatid(self, label):
+    #     for annotations in self.annotations:
+    #         if label == annotations["image_id"]:
+    #             return annotations["id"]
+    #     print("label: {} not in categories: {}.".format(label, self.annotations))
+    #     exit()
+    #     return -1
 
     def getbbox(self, points):
         polygons = points
