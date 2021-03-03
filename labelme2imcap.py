@@ -77,6 +77,28 @@ class labelme2coco(object):
 
         return image
 
+     def annotation(self, points, label, num):
+        annotation = {}
+        contour = np.array(points)
+        x = contour[:, 0]
+        y = contour[:, 1]
+        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+        annotation["image_id"] = num
+        annotation["caption"] = label[0]  # self.getcatid(label)
+        annotation["id"] = self.annID
+        annotation["segmentation"] = [list(np.asarray(points).flatten())]
+        annotation["iscrowd"] = 0
+        annotation["area"] = area
+        annotation["bbox"] = list(map(float, self.getbbox(points)))
+        return annotation
+
+    def category(self, label):
+        category = {}
+        category["supercategory"] = label[0]
+        category["id"] = len(self.categories)
+        category["name"] = label[0]
+        return category
+    
     def licenses(self):
         licenses = {}
         for num in range(9):
@@ -116,28 +138,6 @@ class labelme2coco(object):
                 licenses["url"] = "Unknow"
                 licenses["id"] = 0
                 licenses["name"] = "Unknow"
-
-    def annotation(self, points, label, num):
-        annotation = {}
-        contour = np.array(points)
-        x = contour[:, 0]
-        y = contour[:, 1]
-        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-        annotation["image_id"] = num
-        annotation["caption"] = label[0]  # self.getcatid(label)
-        annotation["id"] = self.annID
-        annotation["segmentation"] = [list(np.asarray(points).flatten())]
-        annotation["iscrowd"] = 0
-        annotation["area"] = area
-        annotation["bbox"] = list(map(float, self.getbbox(points)))
-        return annotation
-
-    def category(self, label):
-        category = {}
-        category["supercategory"] = label[0]
-        category["id"] = len(self.categories)
-        category["name"] = label[0]
-        return category
 
     def getcatid(self, label):
         for category in self.categories:
