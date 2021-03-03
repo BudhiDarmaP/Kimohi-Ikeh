@@ -8,7 +8,6 @@ import glob
 import PIL.Image
 import time
 
-
 class labelme2coco(object):
     def __init__(self, labelme_json=[], save_json_path="./coco.json"):
         """
@@ -17,92 +16,16 @@ class labelme2coco(object):
         """
         self.labelme_json = labelme_json
         self.save_json_path = save_json_path
-        self.info= []
-        self.images = []
-        self.licenses = []
-        self.categories = []
-        self.annotations = []
-        self.label = []
-        self.annID = 1
-        self.height = 0
-        self.width = 0
-        self.date = time.strftime('%Y/%m/$d')
-
-        self.save_json()
-
-    def data_transfer(self):
-        for num, json_file in enumerate(self.labelme_json):
-            with open(json_file, "r") as fp:
-                data = json.load(fp)
-                self.images.append(self.image(data, num))
-                for shapes in data["shapes"]:
-                    label = shapes["label"].split("_")
-                    if label not in self.label:
-                        self.label.append(label)
-                    points = shapes["points"]
-                    self.annotations.append(self.annotation(points, label, num))
-                    self.annID += 1
-
-        # Sort all text labels so they are in the same order across data splits.
-        self.label.sort()
-        for label in self.label:
-            self.categories.append(self.category(label))
-        for annotation in self.annotations:
-            annotation["caption"] = self.getcatid(annotation["caption"])
-
-    def info(self):
-        info = {
+        self.info= {
             "description": "FMIPA UGM Dataset",
             "url": "http://fmipa.ugm.ac.id",
             "version": "1.0",
             "year": 2014,
             "contributor": "FMIPA UGM",
-            "date_created": self.date
-        }
-
-        return info
-    
-    def image(self, data, num):
-        image = {}
-        img = utils.img_b64_to_arr(data["imageData"])
-        height, width = img.shape[:2]
-        img = None
-        image["license"] = 1
-        image["file_name"] = data["imagePath"].split("/")[-1]
-        image["height"] = height
-        image["width"] = width
-        image["date_captured"] = "2019-12-16",
-        image["id"] = num
-
-        self.height = height
-        self.width = width
-
-        return image
-
-    def annotation(self, points, label, num):
-        annotation = {}
-        contour = np.array(points)
-        x = contour[:, 0]
-        y = contour[:, 1]
-        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-        annotation["image_id"] = num
-        annotation["caption"] = label[0]  # self.getcatid(label)
-        annotation["id"] = self.annID
-        annotation["segmentation"] = [list(np.asarray(points).flatten())]
-        annotation["iscrowd"] = 0
-        annotation["area"] = area
-        annotation["bbox"] = list(map(float, self.getbbox(points)))
-        return annotation
-
-    def category(self, label):
-        category = {}
-        category["supercategory"] = label[0]
-        category["id"] = len(self.categories)
-        category["name"] = label[0]
-        return category
-    
-    def licenses(self):
-        licenses = {
+            "date_created": time.strftime('%Y/%m/%d')
+            }
+        self.images = []
+        self.licenses = [
             {
                 "url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
                 "id": 1,
@@ -147,8 +70,78 @@ class labelme2coco(object):
                 "id": 0,
                 "name": "Unknow"
             }
-        }
-        return licenses
+        ]
+        self.categories = []
+        self.annotations = []
+        self.label = []
+        self.annID = 1
+        self.height = 0
+        self.width = 0
+
+        self.save_json()
+
+    def data_transfer(self):
+        self.info
+        for num, json_file in enumerate(self.labelme_json):
+            with open(json_file, "r") as fp:
+                data = json.load(fp)
+                self.images.append(self.image(data, num))
+                for shapes in data["shapes"]:
+                    label = shapes["label"].split("_")
+                    if label not in self.label:
+                        self.label.append(label)
+                    points = shapes["points"]
+                    self.annotations.append(self.annotation(points, label, num))
+                    self.annID += 1
+
+        # License
+        self.licenses
+        # Sort all text labels so they are in the same order across data splits.
+        self.label.sort()
+        for label in self.label:
+            self.categories.append(self.category(label))
+        for annotation in self.annotations:
+            annotation["caption"] = self.getcatid(annotation["caption"])
+    
+    def image(self, data, num):
+        image = {}
+        img = utils.img_b64_to_arr(data["imageData"])
+        height, width = img.shape[:2]
+        img = None
+        
+        image["file_name"] = data["imagePath"].split("/")[-1]
+        image["license"] = 1
+        image["height"] = height
+        image["width"] = width
+        image["date_captured"] = "2019-12-16"
+        image["id"] = num
+
+        self.height = height
+        self.width = width
+
+        return image
+
+    def category(self, label):
+        category = {}
+        category["supercategory"] = label[0]
+        category["id"] = len(self.categories)
+        category["name"] = label[0]
+        return category
+
+    def annotation(self, points, label, num):
+        annotation = {}
+        contour = np.array(points)
+        x = contour[:, 0]
+        y = contour[:, 1]
+        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+        annotation["image_id"] = num
+        annotation["caption"] = label[0]  # self.getcatid(label)
+        annotation["id"] = self.annID
+        annotation["segmentation"] = [list(np.asarray(points).flatten())]
+        annotation["iscrowd"] = 0
+        annotation["area"] = area
+        annotation["bbox"] = list(map(float, self.getbbox(points)))
+        return annotation
 
     def getcatid(self, label):
         for category in self.categories:
@@ -193,9 +186,9 @@ class labelme2coco(object):
     def data2coco(self):
         data_coco = {}
         data_coco["info"] = self.info
-        data_coco["images"] = self.image
+        data_coco["images"] = self.images
         data_coco["licenses"] = self.licenses
-        data_coco["categories"] = self.categories
+        # data_coco["categories"] = self.categories
         data_coco["annotations"] = self.annotations
         return data_coco
 
@@ -209,6 +202,7 @@ class labelme2coco(object):
             os.path.dirname(os.path.abspath(self.save_json_path)), exist_ok=True
         )
         json.dump(self.data_coco, open(self.save_json_path, "w"), indent=4)
+
 
 if __name__ == "__main__":
     import argparse
