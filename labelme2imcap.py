@@ -199,6 +199,7 @@ class labelme2coco(object):
         )
         json.dump(self.data_coco, open(self.save_json_path, "w"), indent=4)
 
+        
 if __name__ == "__main__":
     import argparse
 
