@@ -184,8 +184,8 @@ class labelme2coco(object):
         data_coco["info"] = self.info
         data_coco["images"] = self.image
         data_coco["licenses"] = self.licenses
-        data_coco["annotations"] = self.annotations
         data_coco["categories"] = self.categories
+        data_coco["annotations"] = self.annotations
         return data_coco
 
     def save_json(self):
