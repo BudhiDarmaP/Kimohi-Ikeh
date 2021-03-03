@@ -77,7 +77,7 @@ class labelme2coco(object):
 
         return image
 
-     def annotation(self, points, label, num):
+    def annotation(self, points, label, num):
         annotation = {}
         contour = np.array(points)
         x = contour[:, 0]
