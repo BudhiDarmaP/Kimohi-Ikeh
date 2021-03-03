@@ -51,13 +51,15 @@ class labelme2coco(object):
             annotation["caption"] = self.getcatid(annotation["caption"])
 
     def info(self):
-        info = {}
-        info["description"] = "FMIPA UGM Dataset"
-        info["url"] = "http://fmipa.ugm.ac.id",
-        info["version"] = "1.0"
-        info["year"] = 2014,
-        info["contributor"] = "FMIPA Consortium"
-        info["date_created"] = self.date
+        info = {
+            "description": "FMIPA UGM Dataset",
+            "url": "http://fmipa.ugm.ac.id",
+            "version": "1.0",
+            "year": 2014,
+            "contributor": "FMIPA UGM",
+            "date_created": self.date
+        }
+
         return info
     
     def image(self, data, num):
@@ -100,44 +102,53 @@ class labelme2coco(object):
         return category
     
     def licenses(self):
-        licenses = {}
-        for num in range(9):
-            if num is 1:
-                licenses["url"] = "http://creativecommons.org/licenses/by-nc-sa/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution-NonCommercial-ShareAlike License"
-            elif num is 2:
-                licenses["url"] = "http://creativecommons.org/licenses/by-nc/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution-NonCommercial License"
-            elif num is 3:
-                licenses["url"] = "http://creativecommons.org/licenses/by-nc-nd/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution-NonCommercial-NoDerivs License"
-            elif num is 4:
-                licenses["url"] = "http://creativecommons.org/licenses/by/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution License"
-            elif num is 5:
-                licenses["url"] = "http://creativecommons.org/licenses/by-sa/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution-ShareAlike License"
-            elif num is 6:
-                licenses["url"] = "http://creativecommons.org/licenses/by-nd/2.0/"
-                licenses["id"] = num
-                licenses["name"] = "Attribution-NoDerivs License"
-            elif num is 7:
-                licenses["url"] = "http://flickr.com/commons/usage/"
-                licenses["id"] = num
-                licenses["name"] = "No known copyright restrictions"
-            elif num is 8:
-                licenses["url"] = "http://www.usa.gov/copyright.shtml"
-                licenses["id"] = num
-                licenses["name"] = "United States Government Work"
-            else:
-                licenses["url"] = "Unknow"
-                licenses["id"] = 0
-                licenses["name"] = "Unknow"
+        licenses = {
+            {
+                "url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
+                "id": 1,
+                "name": "Attribution-NonCommercial-ShareAlike License"
+            },
+            {
+                "url": "http://creativecommons.org/licenses/by-nc/2.0/",
+                "id": 2,
+                "name": "Attribution-NonCommercial License"
+            },
+            {
+                "url": "http://creativecommons.org/licenses/by-nc-nd/2.0/",
+                "id": 3,
+                "name": "Attribution-NonCommercial-NoDerivs License"
+            },
+            {
+                "url": "http://creativecommons.org/licenses/by/2.0/",
+                "id": 4,
+                "name": "Attribution License"
+            },
+            {
+                "url": "http://creativecommons.org/licenses/by-sa/2.0/",
+                "id": 5,
+                "name": "Attribution-ShareAlike License"
+            },
+            {
+                "url": "http://creativecommons.org/licenses/by-nd/2.0/",
+                "id": 6,
+                "name": "Attribution-NoDerivs License"
+            },
+            {
+                "url": "http://flickr.com/commons/usage/",
+                "id": 7,
+                "name": "No known copyright restrictions"
+            },
+            {
+                "url": "http://www.usa.gov/copyright.shtml",
+                "id": 8,
+                "name": "United States Government Work"
+            },{
+                "url": "Unknow",
+                "id": 0,
+                "name": "Unknow"
+            }
+        }
+        return licenses
 
     def getcatid(self, label):
         for category in self.categories:
@@ -199,7 +210,6 @@ class labelme2coco(object):
         )
         json.dump(self.data_coco, open(self.save_json_path, "w"), indent=4)
 
-        
 if __name__ == "__main__":
     import argparse
 
