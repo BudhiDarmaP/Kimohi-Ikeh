@@ -120,7 +120,7 @@ class labelme2coco(object):
         self.height = height
         self.width = width
 
-        return image
+        return imageimage["file_name"] = data["imagePath"].split("/")[-1]
 
     def category(self, label):
         category = {}
@@ -137,7 +137,6 @@ class labelme2coco(object):
         area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
         annotation["image_id"] = num
         annotation["id"] = self.annID
-        annotation["file_name"]=image["file_name"] = data["imagePath"].split("/")[-1]
         annotation["segmentation"] = [list(np.asarray(points).flatten())]
         annotation["iscrowd"] = 0
         annotation["area"] = area
