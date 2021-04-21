@@ -100,9 +100,9 @@ class labelme2coco(object):
         self.label.sort()
         for label in self.label:
             self.categories.append(self.category(label))
-        for annotation in self.annotations:
-            annotation["label_id"] = self.getcatid(annotation["label_id"])
-            annotation["caption"]=label[0]
+            self.annotations.append(label)
+        # for annotation in self.annotations:
+        #     annotation["label_id"] = self.getcatid(annotation["label_id"])
     
     def image(self, data, num):
         image = {}
@@ -136,7 +136,7 @@ class labelme2coco(object):
         y = contour[:, 1]
         area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
         annotation["image_id"] = num
-        annotation["label_id"] = label[0]  # self.getcatid(label)
+        annotation["caption"] = label[0]  # self.getcatid(label)
         annotation["id"] = self.annID
         annotation["segmentation"] = [list(np.asarray(points).flatten())]
         annotation["iscrowd"] = 0
