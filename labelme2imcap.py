@@ -136,12 +136,12 @@ class labelme2coco(object):
         y = contour[:, 1]
         area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
         annotation["image_id"] = num
-        annotation["caption"] = label[0]  # self.getcatid(label)
         annotation["id"] = self.annID
         annotation["segmentation"] = [list(np.asarray(points).flatten())]
         annotation["iscrowd"] = 0
         annotation["area"] = area
         annotation["bbox"] = list(map(float, self.getbbox(points)))
+        annotation["caption"] = label[0]  # self.getcatid(label)
         return annotation
 
     def getcatid(self, label):
