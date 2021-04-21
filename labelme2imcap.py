@@ -141,7 +141,7 @@ class labelme2coco(object):
         annotation["iscrowd"] = 0
         annotation["area"] = area
         annotation["bbox"] = list(map(float, self.getbbox(points)))
-        annotation["caption"] = label  # self.getcatid(label)
+        annotation["caption"] = label[0]  # self.getcatid(label)
         return annotation
 
     def getcatid(self, label):
