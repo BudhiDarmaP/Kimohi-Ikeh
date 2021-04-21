@@ -100,7 +100,7 @@ class labelme2coco(object):
         self.label.sort()
         for label in self.label:
             self.categories.append(self.category(label))
-            self.annotations.append(label[0])
+        #   self.annotations.append(label[0])
         # for annotation in self.annotations:
         #     annotation["label_id"] = self.getcatid(annotation["label_id"])
     
