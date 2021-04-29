@@ -85,6 +85,7 @@ class labelme2coco(object):
         for num, json_file in enumerate(self.labelme_json):
             with open(json_file, "r") as fp:
                 data = json.load(fp)
+                num=int(data["imagePath"][-10:-4])
                 self.images.append(self.image(data, num))
                 for shapes in data["shapes"]:
                     label = shapes["label"].split("_")
@@ -120,7 +121,7 @@ class labelme2coco(object):
         self.height = height
         self.width = width
 
-        return imageimage["file_name"] = data["imagePath"].split("/")[-1]
+        return image
 
     def category(self, label):
         category = {}
